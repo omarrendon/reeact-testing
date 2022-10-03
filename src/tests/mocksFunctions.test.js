@@ -3,8 +3,6 @@ import { saveUserName, getUserName } from "../user";
 
 jest.mock('../lib/storage');
 
-
-
 describe('MOCK FUNCTIONS ', () => {
   let username = 'john doe';
   
