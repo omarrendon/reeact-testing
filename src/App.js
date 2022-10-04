@@ -1,9 +1,8 @@
+import Form from "./form/Form";
 
 function App() {
   return (
-    <div >
-      <p>learn react</p>
-    </div>
+    <Form />
   );
 }
 
