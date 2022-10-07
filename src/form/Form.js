@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { CREATED_STATUS, ERROR_SERVER_STATUS, INVALID_REQUEST_STATUS } from '../consts/httpStatus';
+import { saveProducts } from '../services/productServices';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { saveProducts } from '../services/productServices';
-import { CREATED_STATUS, ERROR_SERVER_STATUS } from '../consts/httpStatus';
 
 export const Form = () => {
   const [formErrors, setFormErrors] = useState({
@@ -34,7 +34,18 @@ export const Form = () => {
     name: name.value,
     size: size.value,
     type: type.value,
-  })
+  });
+
+  const handleFetchErrors = async (error) => {
+    if (error.status === ERROR_SERVER_STATUS) {
+      setErrorMessage('Unexpected error, please try again');
+    };
+
+    if (error.status === INVALID_REQUEST_STATUS) {
+      const data = await response.json();
+      setErrorMessage(data?.message);
+    };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,15 +58,19 @@ export const Form = () => {
       setErrorMessage('Unexpected error, please try again');
     };
 
-    const response = await saveProducts(getFormValues({ name, size, type }));
+    try {
+      const response = await saveProducts(getFormValues({ name, size, type }));
 
-    if (response.status === CREATED_STATUS) {
-      e.target.reset();
-      setSuccessMessage(true);
-    }
+      if (!response.ok) {
+        throw response;
+      };
 
-    if (response.status === ERROR_SERVER_STATUS) {
-      setErrorMessage('Unexpected error, please try again');
+      if (response.status === CREATED_STATUS) {
+        e.target.reset();
+        setSuccessMessage(true);
+      }
+    } catch (error) {
+      handleFetchErrors(error);
     }
     setIsSaving(false);
   };
