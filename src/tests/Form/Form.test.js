@@ -4,30 +4,10 @@ import { rest } from 'msw'
 import { CREATED_STATUS, INVALID_REQUEST_STATUS, ERROR_SERVER_STATUS } from "../../consts/httpStatus";
 import Form from "../../form/Form";
 
-// const server = setupServer(
-//   rest.post('/products', (req, res, ctx) => res(ctx.status(CREATED_STATUS))),
-// )
-
 const server = setupServer(
-  rest.post('/products', (req, res, ctx) => {
-    const { name, size, type } = req.body
-    console.log(req.body);
-    if (name && size && type) {
-      return res(ctx.status(CREATED_STATUS))
-    }
-    return res(ctx.status(ERROR_SERVER_STATUS))
-  }),
+  rest.post('/products', (req, res, ctx) => res(ctx.status(CREATED_STATUS))),
 )
 
-// const server = setupServer(
-//   rest.post('/products', (req, res, ctx) => {
-//     const {name, size, type} = req.body
-//     if (name && size && type) {
-//       return res(ctx.status(CREATED_STATUS))
-//     }
-//     return res(ctx.status(ERROR_SERVER_STATUS))
-//   })
-// )
 beforeAll(() => server.listen())
 
 afterAll(() => server.close())
@@ -130,31 +110,6 @@ describe('when the user submits the form and the server returns an unexpected er
     await waitFor(() =>
       expect(
         screen.getByText(/unexpected error, please try again/i),
-      ).toBeInTheDocument(),
-    )
-  })
-});
-
-describe('when the user submits the form and the server returns an invalid request error', () => {
-  it('the form page must display the error message "The form is invalid, the fields [field1...fieldN] are required"', async () => {
-
-    server.use(
-      rest.post('/products', (req, res, ctx) => {
-        return res(
-          ctx.status(INVALID_REQUEST_STATUS),
-          ctx.json({
-            message:
-              'The form is invalid, the fields name, size, type are required',
-          }),
-        )
-      }),
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-    await waitFor(() =>
-      expect(
-        screen.getByText(/the form is invalid, the fields name, size, type are required/i),
       ).toBeInTheDocument(),
     )
   })
