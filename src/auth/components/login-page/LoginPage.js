@@ -5,35 +5,39 @@ import { useState } from 'react';
 import { Typography } from '@material-ui/core';
 
 export default function LoginPage() {
-  const [emailValidationMessage, setEmailValidationMessage] = useState('');
-  const [passwordValidationMessage, setPasswordValidationMessage] = useState('');
+  const [emailValidationMessage, setEmailValidationMessage] = useState('')
+  const [passwordValidationMessage, setPasswordValidationMessage] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setEmailValidationMessage('The email is required');
-    setPasswordValidationMessage('The password is required');
+  const handleSubmit = e => {
+    e.preventDefault()
+    const { email, password } = e.target.elements
+
+    if (!email.value) {
+      setEmailValidationMessage('The email is required')
+    }
+
+    if (!password.value) {
+      setPasswordValidationMessage('The password is required')
+    }
   }
+
   return (
-    <div>
+    <>
       <h1>Login Page</h1>
-      <TextField
-        label='email'
-        id='email'
-        helperText={emailValidationMessage}
-      />
       <form onSubmit={handleSubmit}>
         <TextField
-          id='password'
-          label='password'
-          helperText={passwordValidationMessage}
-          type={'password'}
+          label="email"
+          id="email"
+          helperText={emailValidationMessage}
         />
-        <Button
-          type="submit"
-        >
-          Submit
-        </Button>
+        <TextField
+          label="password"
+          id="password"
+          type="password"
+          helperText={passwordValidationMessage}
+        />
+        <Button type="submit">Send</Button>
       </form>
-    </div>
+    </>
   )
 }
